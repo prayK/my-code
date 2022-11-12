@@ -1,0 +1,163 @@
+#include <iostream>
+
+using namespace std;
+
+class ListNode
+{
+public:
+  int value;
+  ListNode *next;
+  ListNode() : value(0), next(nullptr) {}
+  ListNode(int value) : value(value), next(nullptr) {}
+  ListNode(int value, ListNode *next) : value(value), next(next) {}
+};
+
+ListNode *CreateListNode()
+{
+  ListNode *Head = new ListNode;
+  Head->next = nullptr;
+  ListNode *cur = Head;
+
+  cout << "Input Your Number" << endl;
+  do
+  {
+    ListNode *node = new ListNode;
+    cin >> node->value;
+
+    cur->next = node;
+    cur = node;
+
+  } while (getchar() != '\n');
+
+  cur->next = nullptr;
+
+  return Head;
+}
+
+class Solution
+{
+public:
+  ListNode *Reverse(ListNode *Head)
+  {
+    if ((Head == nullptr) || (Head->next == nullptr))
+    {
+      return Head;
+    }
+    ListNode *beg = nullptr;
+    ListNode *mid = Head;
+    ListNode *end = nullptr;
+
+    while (mid)
+    {
+      end = mid->next;
+      mid->next = beg;
+
+      beg = mid;
+      mid = end;
+    }
+    return beg;
+  }
+  ListNode *DeleteNode(ListNode *Head, int value)
+  {
+    if (Head == nullptr)
+    {
+      return Head;
+    }
+
+    ListNode *NewHead = Head;
+    while (NewHead != nullptr)
+    {
+      if (NewHead->next->value == value)
+      {
+        NewHead->next = NewHead->next->next;
+      }
+      else
+      {
+        NewHead = NewHead->next;
+      }
+    }
+    return Head;
+  }
+  ListNode *HavingRing(ListNode *Head)
+  {
+    if ((Head == nullptr) || (Head->next == nullptr))
+    {
+      return Head;
+    }
+    ListNode *fast = Head;
+    ListNode *slow = Head;
+
+    while ((fast != nullptr) && (fast->next != nullptr))
+    {
+      slow = slow->next;
+      fast = fast->next->next;
+      if (slow = fast)
+      {
+        ListNode *index1 = fast;
+        ListNode *index2 = Head;
+        while (index1 != index2)
+        {
+          index1 = index1->next;
+          index2 = index2->next;
+        }
+        return index1;
+      }
+    }
+    return nullptr;
+  }
+  ListNode *Intersection(ListNode *headA, ListNode *headB)
+  {
+    if ((headA == nullptr) || (headB == nullptr))
+    {
+      return nullptr;
+    }
+    ListNode *curLong = headA;
+    ListNode *curShort = headB;
+    int lenA = 0;
+    int lenB = 0;
+
+    while (curLong != nullptr)
+    {
+      ++lenA;
+      curLong = curLong->next;
+    }
+    while (curShort != nullptr)
+    {
+      ++lenB;
+      curShort = curShort->next;
+    }
+    if (lenA > lenB)
+    {
+      curLong = headA;
+      curShort = headB;
+    }
+    else
+    {
+      curLong = headB;
+      curShort = headB;
+    }
+    int len = (lenA - lenB) ? (lenA - lenB) : (lenB - lenA);
+    while (len--)
+    {
+      curLong = curLong->next;
+    }
+    while (curLong != nullptr)
+    {
+      if (curLong == curShort)
+      {
+        return curShort;
+      }
+      curLong = curLong->next;
+      curShort = curShort->next;
+    }
+    return nullptr;
+  }
+};
+
+int main()
+{
+  ListNode *Head = CreateListNode();
+  Solution MySolution;
+
+  return 0;
+}

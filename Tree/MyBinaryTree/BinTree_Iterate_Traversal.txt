@@ -1,0 +1,242 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct TreeNode
+{
+  int val;
+  TreeNode *left;
+  TreeNode *right;
+  TreeNode() : val(0), left(nullptr), right(nullptr) {}
+  TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+  TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+};
+
+void CreateBiTree(TreeNode **T)
+{
+  *T = (TreeNode *)malloc(sizeof(TreeNode));
+  (*T)->val = 1;
+  (*T)->left = (TreeNode *)malloc(sizeof(TreeNode));
+  (*T)->right = (TreeNode *)malloc(sizeof(TreeNode));
+
+  (*T)->left->val = 2;
+  (*T)->left->left = (TreeNode *)malloc(sizeof(TreeNode));
+  (*T)->left->right = (TreeNode *)malloc(sizeof(TreeNode));
+  (*T)->left->right->val = 5;
+  (*T)->left->right->left = NULL;
+  (*T)->left->right->right = NULL;
+
+  (*T)->right->val = 3;
+  (*T)->right->left = (TreeNode *)malloc(sizeof(TreeNode));
+  (*T)->right->left->val = 6;
+  (*T)->right->left->left = NULL;
+  (*T)->right->left->right = NULL;
+
+  (*T)->right->right = (TreeNode *)malloc(sizeof(TreeNode));
+  (*T)->right->right->val = 7;
+  (*T)->right->right->left = NULL;
+  (*T)->right->right->right = NULL;
+
+  (*T)->left->left->val = 4;
+  (*T)->left->left->left = NULL;
+  (*T)->left->left->right = NULL;
+}
+
+class Solution
+{
+public:
+  /* 先序遍历*/
+  vector<int> PreorderTraversal(TreeNode *root)
+  {
+    stack<TreeNode *> st;
+    vector<int> result;
+    if (root == nullptr)
+      return result;
+    st.push(root);
+    while (!st.empty())
+    {
+      TreeNode *node = st.top(); //先将栈顶元素保存下来，因为弹栈时不会返回  //中
+      st.pop();
+      result.push_back(node->val);
+      if (node->right) //右(空节点不入栈)
+      {
+        st.push(node->right);
+      }
+      if (node->left) //左(空节点不入栈)
+      {
+        st.push(node->left);
+      }
+    }
+    return result;
+  }
+
+  /* 中序遍历 */
+  vector<int> InOrderTraversal(TreeNode *root)
+  {
+    vector<int> result;
+    if (root == nullptr)
+      return result;
+    stack<TreeNode *> st;
+    TreeNode *cur = root;
+
+    while ((cur != nullptr) || (!st.empty())) //当cur为NULL或者栈为空时，表明树遍历完成
+    {
+      while (cur != nullptr)
+      {
+        st.push(cur);
+        cur = cur->left;
+      }
+
+      cur = st.top();
+      st.pop();
+      res.push_back(cur->val);
+      cur = cur->right;
+    }
+    return result;
+  }
+
+  /* 后续遍历 */
+  //只需要调整一下先序遍历的代码顺序，就变成中右左的遍历顺序，然后在反转result数组，输出的结果顺序就是左右中
+  vector<int> PostOrderTraversal(TreeNode *root)
+  {
+    vector<int> result;
+    stack<TreeNode *> st;
+    if (root == nullptr)
+      return result;
+    st.push(root);
+    while (!st.empty())
+    {
+      TreeNode *node = st.top();
+      st.pop();
+      result.push_back(node->val);
+      if (node->left) //左(空节点不入栈)
+      {
+        st.push(node->left);
+      }
+      if (node->right) //右(空节点不入栈)
+      {
+        st.push(node->right);
+      }
+    }
+    reverse(result.begin(), result.end()); // 将结果反转之后就是左右中的顺序了
+    return result;
+  }
+
+  /* 层序遍历 */
+  vector<vector<int>> LevelOrderTraversal(TreeNode *root)
+  {
+    vector<vector<int>> result;
+    if (root == nullptr)
+    {
+      return result;
+    }
+    queue<TreeNode *> q;
+    q.push(root);
+
+    while (!q.empty())
+    {
+      int size = q.size();
+      vector<int> vec;
+
+      // 这里一定要使用固定大小size，不要使用que.size()，因为que.size是不断变化的(这个size用的好，刚好是某一层的深度)
+      for (int i = 0; i < size; i++)
+      {
+        TreeNode *node = q.front(); //还是要将即将要出队列的元素转存一下，因为出队列时不会返回
+        q.pop();
+        vec.push_back(node->val);
+        if (node->left)
+        {
+          q.push(node->left);
+        }
+        if (node->right)
+        {
+          q.push(node->right);
+        }
+      }
+      result.push_back(vec);
+    }
+    return result;
+  }
+
+  /* 查看右视图 */
+  vector<int> rightSideView(TreeNode *root)
+  {
+    vector<int> res;
+    if (root == nullptr)
+        return res;
+    queue<TreeNode *> q;
+    q.push(root);
+
+    while (!q.empty())
+    {
+      int size = q.size();
+      for (int i = 0; i < size; ++i)
+      {
+        TreeNode *node = q.front();
+        q.pop();
+        if (i == (size - 1))
+        {
+          res.push_back(node->val); // 将每一层的最后元素放入res数组中
+        }
+        if (node->left)
+        {
+          q.push(node->left);
+        }
+        if (node->right)
+        {
+          q.push(node->right);
+        }
+      }
+    }
+    return res;
+  }
+};
+
+int main(int argc, char *argv[])
+{
+  Solution s;
+  TreeNode *T;
+  vector<int> res;
+
+  CreateBiTree(&T);
+  res = s.PostOrderTraversal(T);
+
+  for (auto &i : res)
+  {
+    cout << i << " ";
+  }
+  cout << endl;
+
+  return 0;
+}
+
+/*
+int main(int argc, char *argv[])
+{
+    Solution s;
+    TreeNode *T;
+    vector<vector<int>> res;
+
+    CreateBiTree(&T);
+    res = s.LevelOrderTraversal(T);
+
+    for (vector<vector<int>>::iterator it = res.begin(); it != res.end(); ++it)
+    {
+        for (vector<int>::iterator it1 = (*it).begin(); it1 != (*it).end(); ++it1)
+        {
+            cout << *it1 << " ";
+        }
+        cout << endl;
+    }
+
+    for (int i = 0; i < res.size(); ++i)
+    {
+        for (int j = 0; j < res.size(); ++j)
+        {
+            cout << res[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    return 0;
+}
+*/
